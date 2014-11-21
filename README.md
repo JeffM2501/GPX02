@@ -4,9 +4,9 @@ A 2d tank game to give the masses (30 people ) what they want.
 
 Licensing
 =====
-The main codebase is licensed under the Mozilla Public License (MPL). Some artwork and assets are from other sources and are restricted by there own licenses as marked out in individual license.txt files (usually LGPL, CC BY-NC-ND 3.0, etc..)
+The main codebase is licensed under the Mozilla Public License (MPL) and Copyright 2014 Jeffery Myers. Some artwork and assets are from other sources and are restricted by there own licenses and copyright holders as marked out in individual license.txt files (usually LGPL, CC BY-NC-ND 3.0, etc..)
 
-Some parts of the system use code or assets provided with the Unity3d system and are provided free of use but are copyright Unity Technologies 
+Some parts of the system use code or assets provided with the Unity3d system and are provided free of use but are copyright Unity Technologies.
 
 
 Unity
