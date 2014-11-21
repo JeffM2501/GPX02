@@ -1,6 +1,6 @@
 GPX02
 =====
-A 2d tank game to give the massed (30 people ) what they want.
+A 2d tank game to give the masses (30 people ) what they want.
 
 Licensing
 =====
