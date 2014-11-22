@@ -13,13 +13,22 @@ public class NetworkPeer : MonoBehaviour
 
 	void Start ()
     {
-        IsLocal = NetworkHost.Host != null;
+       
+	}
 
-        if (!IsLocal)
-        {
-            Network.Connect(TargetServer);
-            Debug.Log("Connecting to " + TargetServer.ToString());
-        }
+	public void ConnectLocal()
+	{
+		IsLocal = NetworkHost.Host != null;
+
+		if (!IsLocal)
+		{
+			Network.Connect(TargetServer);
+			Debug.Log("Connecting to " + TargetServer.ToString());
+		}
+		else
+		{
+			NetworkHost.Host.AddLocalPlayer(this);
+		}
 	}
 
     void OnConnectedToServer()
@@ -27,6 +36,8 @@ public class NetworkPeer : MonoBehaviour
         Debug.Log("Host connection established");
         StartClient();
 
+		if (IsLocal)
+			NetworkHost.Host.ClientHail(NetworkHost.ConnectionMagic,)
         this.networkView.RPC("ClientHail",RPCMode.Server,NetworkHost.ConnectionMagic);
     }
 

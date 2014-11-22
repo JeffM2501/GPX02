@@ -14,12 +14,15 @@ public class GameLevel : MonoBehaviour
 
 	void Start ()
     {
-        //
+		Debug.Log("Game Level Started");
+		if (Debug.isDebugBuild)
+			OnLevelWasLoaded(0);
 	}
 
     void OnLevelWasLoaded (int level)
     {
         LevelName = Path.GetFileName(UnityEditor.EditorBuildSettings.scenes[level].path);
+		Debug.Log("OnLevel Was Loaded " + LevelName);
         if (NetworkHost.Host != null)
             NetworkHost.Host.Startup(this);
     }

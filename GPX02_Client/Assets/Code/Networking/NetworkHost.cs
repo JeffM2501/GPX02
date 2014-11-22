@@ -21,7 +21,7 @@ public class NetworkHost : MonoBehaviour
     public class NetworkStartupOptions
     {
         public string ServerName = "DebugServer";
-        public int Port = 2501;
+		public int Port = DefaultPort;
         public HostData ConnectTo = new HostData();
 
         public int MaxConnections = 50;
@@ -30,22 +30,29 @@ public class NetworkHost : MonoBehaviour
 
     public class Player
     {
-        public NetworkPlayer Peer;
+        public NetworkPlayer Socket;
+		public NetworkPeer Peer;		
         public bool IsLocal = false;
 
-        public Player()
+        public Player(NetworkPeer peer)
         { 
             IsLocal = true;
+			Peer = peer;
         }
 
         public Player(NetworkPlayer netPeer)
         {
-            Peer = netPeer;
+			Socket = netPeer;
             IsLocal = false;
         }
     }
 
     public Dictionary<string, Player> Players = new Dictionary<string, Player>();
+
+	void Awake()
+	{
+		Host = this;
+	}
 
 	void Start ()
     {
@@ -59,8 +66,11 @@ public class NetworkHost : MonoBehaviour
 
     public void Startup(GameLevel level)
     {
-        Network.InitializeServer(Options.MaxConnections, Options.Port, !Network.HavePublicAddress());
-        MasterServer.RegisterHost(GlobalHostID, Options.ServerName, string.Empty);
+		Debug.Log("Network Host Startup");
+        Network.InitializeServer(Options.MaxConnections, Options.Port, !Debug.isDebugBuild && !Network.HavePublicAddress());
+
+		if (!Debug.isDebugBuild)
+			MasterServer.RegisterHost(GlobalHostID, Options.ServerName, string.Empty);
     }
 
     void OnServerInitialized()
@@ -68,17 +78,18 @@ public class NetworkHost : MonoBehaviour
         Debug.Log("Server Started");
     }
 
-    public void AddLocalPlayer()
+    public void AddLocalPlayer(NetworkPeer peer)
     {
         if (Players.ContainsKey("LocalPlayer"))
         {
-            Debug.Log("Multiple Local Players Added");
+            Debug.Log("xMultiple Local Players Added");
             return;
         }
 
-        Player player = new Player();
+        Player player = new Player(peer);
         player.IsLocal = true;
         Players.Add("LocalPlayer", player);
+		peer.StartClient();
     }
 
     void OnPlayerConnected(NetworkPlayer player)
@@ -104,5 +115,12 @@ public class NetworkHost : MonoBehaviour
 
         Players.Remove(player.guid);
     }
+
+	// client RPCs
+	[RPC]
+	public void ClientHail (string magic, NetworkMessageInfo info)
+	{
+		Debug.Log(info.sender.guid + " sent hail: " + magic);
+	}
 
 }
