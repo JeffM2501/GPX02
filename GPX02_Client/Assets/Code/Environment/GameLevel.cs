@@ -12,19 +12,31 @@ public class GameLevel : MonoBehaviour
 {
     public string LevelName = string.Empty;
 
+    public bool StartedServer = false;
+
 	void Start ()
     {
 		Debug.Log("Game Level Started");
-		if (Debug.isDebugBuild)
-			OnLevelWasLoaded(0);
+
+        if (Application.isLoadingLevel)
+            Debug.Log("Is loading");
+
+		if (Application.isEditor && !Application.isLoadingLevel)
+			OnLevelWasLoaded(Application.loadedLevel);
 	}
 
     void OnLevelWasLoaded (int level)
     {
-        LevelName = Path.GetFileName(UnityEditor.EditorBuildSettings.scenes[level].path);
+        if (StartedServer)
+            return;
+
+        if (level >= 0 && level < UnityEditor.EditorBuildSettings.scenes.Length)
+            LevelName = Path.GetFileName(UnityEditor.EditorBuildSettings.scenes[level].path);
 		Debug.Log("OnLevel Was Loaded " + LevelName);
         if (NetworkHost.Host != null)
             NetworkHost.Host.Startup(this);
+
+        StartedServer = NetworkHost.Host != null;
     }
 
 	void Update ()

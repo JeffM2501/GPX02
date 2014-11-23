@@ -66,10 +66,20 @@ public class NetworkHost : MonoBehaviour
 
     public void Startup(GameLevel level)
     {
-		Debug.Log("Network Host Startup");
-        Network.InitializeServer(Options.MaxConnections, Options.Port, !Debug.isDebugBuild && !Network.HavePublicAddress());
+        ConnectionTesterStatus netStatus = Network.TestConnection(false);
 
-		if (!Debug.isDebugBuild)
+        bool validNetwork = netStatus != ConnectionTesterStatus.Error;
+
+		Debug.Log("Network Host Startup");
+
+        if (Network.HavePublicAddress())
+            Debug.Log("has a public address");
+
+        Debug.Log(netStatus);
+
+        Network.InitializeServer(Options.MaxConnections, Options.Port, validNetwork && !Network.HavePublicAddress());
+
+        if (validNetwork)
 			MasterServer.RegisterHost(GlobalHostID, Options.ServerName, string.Empty);
     }
 

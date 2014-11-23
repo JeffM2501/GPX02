@@ -7,38 +7,22 @@ using System.Collections.Generic;
 public class NetworkPeer : MonoBehaviour
 {
     // globals
-    public static HostData TargetServer = new HostData();
-
-    protected bool IsLocal = false;
+    public static HostData TargetServer = null;
 
 	void Start ()
     {
-       
-	}
-
-	public void ConnectLocal()
-	{
-		IsLocal = NetworkHost.Host != null;
-
-		if (!IsLocal)
-		{
-			Network.Connect(TargetServer);
-			Debug.Log("Connecting to " + TargetServer.ToString());
-		}
-		else
-		{
-			NetworkHost.Host.AddLocalPlayer(this);
-		}
+        if (TargetServer == null && Application.isEditor)
+            Network.Connect("localhost", NetworkHost.DefaultPort);
+        else
+            Network.Connect(TargetServer);
+        Debug.Log("Connecting to host");
 	}
 
     void OnConnectedToServer()
     {
-        Debug.Log("Host connection established");
+        Debug.Log("Host connection established ");
         StartClient();
-
-		if (IsLocal)
-			NetworkHost.Host.ClientHail(NetworkHost.ConnectionMagic,)
-        this.networkView.RPC("ClientHail",RPCMode.Server,NetworkHost.ConnectionMagic);
+        networkView.RPC("ClientHail",RPCMode.Server,NetworkHost.ConnectionMagic);
     }
 
     public void StartClient()
