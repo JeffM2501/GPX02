@@ -48,16 +48,14 @@ public class NetworkConnector : MonoBehaviour
 		if (StartAsServer)
 		{
 			Server = new GPXServer();
-
+		}
+		else
+		{
 			if (TargetServer == null && Application.isEditor)
 				Network.Connect("localhost", DefaultPort);
 			else
 				Network.Connect(TargetServer);
 			Debug.Log("Connecting to host");
-		}
-		else
-		{
-		
 		}
 	}
 
@@ -134,11 +132,12 @@ public class NetworkConnector : MonoBehaviour
 
     void OnPlayerConnected(NetworkPlayer player)
     {
-
+		Debug.Log("Player Connected " + player.guid);
     }
 
     void OnPlayerDisconnected(NetworkPlayer player)
     {
+		Debug.Log("Player Connected " + player.guid);
 		Server.PeerrDisconnected(player);
     }
 
