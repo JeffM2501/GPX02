@@ -6,28 +6,21 @@ using System.Collections.Generic;
 
 public class NetworkPeer : MonoBehaviour
 {
-    // globals
-    public static HostData TargetServer = null;
+	protected bool IsLocalPeer = false;
 
-	void Start ()
-    {
-        if (TargetServer == null && Application.isEditor)
-            Network.Connect("localhost", NetworkHost.DefaultPort);
-        else
-            Network.Connect(TargetServer);
-        Debug.Log("Connecting to host");
+	public NetworkPlayer OwningPlayer;
+
+	void OnNetworkInstantiate(NetworkMessageInfo info)
+	{
+		OwningPlayer = info.sender;
+		if (Network.isServer)
+			NetworkConnector.Connector.Server.PeerConnect(this);
 	}
 
-    void OnConnectedToServer()
+    // globals
+    public void SetLocalPeer()
     {
-        Debug.Log("Host connection established ");
-        StartClient();
-        networkView.RPC("ClientHail",RPCMode.Server,NetworkHost.ConnectionMagic);
-    }
-
-    public void StartClient()
-    {
-
+		IsLocalPeer = true;
     }
 
 	void Update ()

@@ -33,10 +33,10 @@ public class GameLevel : MonoBehaviour
       //  if (level >= 0 && level < UnityEditor.EditorBuildSettings.scenes.Length)
        //     LevelName = Path.GetFileName(UnityEditor.EditorBuildSettings.scenes[level].path);
 		Debug.Log("OnLevel Was Loaded " + LevelName);
-        if (NetworkHost.Host != null)
-            NetworkHost.Host.Startup(this);
+        if (NetworkConnector.Connector != null)
+			NetworkConnector.Connector.Startup(this);
 
-        StartedServer = NetworkHost.Host != null;
+		StartedServer = NetworkConnector.Connector != null;
     }
 
 	void Update ()

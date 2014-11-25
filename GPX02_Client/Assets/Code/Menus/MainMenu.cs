@@ -21,7 +21,7 @@ public class MainMenu : MonoBehaviour
         if (ClientStartButton != null)
             ClientStartButton.interactable = false;
        
-		MasterServer.RequestHostList(NetworkHost.GlobalHostID);
+		MasterServer.RequestHostList(NetworkConnector.GlobalHostID);
 
         if (ServerList != null)
             ServerList.SelectionChanged += ServerList_SelectionChanged;
@@ -32,7 +32,7 @@ public class MainMenu : MonoBehaviour
         if (ClientStartButton != null)
             ClientStartButton.interactable = ServerList.GetSelectedItem() != null;
 
-        NetworkPeer.TargetServer = ServerList.GetSelectedItemTag() as HostData;
+		NetworkConnector.TargetServer = ServerList.GetSelectedItemTag() as HostData;
     }
 
 	void OnMasterServerEvent(MasterServerEvent msEvent)
@@ -50,6 +50,8 @@ public class MainMenu : MonoBehaviour
 
     public void StartServer()
     {
+		NetworkConnector.Connector.StartAsServer = true;
+
         if (ServerLevel == string.Empty)
             Application.Quit();
         else
@@ -58,6 +60,7 @@ public class MainMenu : MonoBehaviour
 
     public void StartClient()
     {
+		NetworkConnector.Connector.StartAsServer = false;
 		Application.LoadLevel(ClientLevel);
     }
 
