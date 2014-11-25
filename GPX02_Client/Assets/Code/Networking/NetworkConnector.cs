@@ -114,7 +114,7 @@ public class NetworkConnector : MonoBehaviour
 			Application.Quit();
 		}
 
-		peer.SetLocalPeer();
+		peer.SetLocalPeer("PlayerName");
 	}
 
 	void OnDisconnectedFromServer(NetworkDisconnection info)

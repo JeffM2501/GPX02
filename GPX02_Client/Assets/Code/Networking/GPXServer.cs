@@ -27,16 +27,17 @@ public class GPXServer
 
 	public Dictionary<string, Player> Players = new Dictionary<string, Player>();
 
-	public void PeerConnect(NetworkPeer peer)
+	public bool PeerConnect(NetworkPeer peer)
 	{
 		Debug.Log("Player Connected " + peer.OwningPlayer.guid);
 		if (Players.ContainsKey(peer.OwningPlayer.guid))
 		{
 			Debug.Log("Duplicate player added:" + peer.OwningPlayer.guid);
-			return;
+			return false;
 		}
 
 		Players.Add(peer.OwningPlayer.guid, new Player(peer));
+		return true;
 	}
 
 	public void PeerDisconnected(NetworkPlayer player)
@@ -53,6 +54,15 @@ public class GPXServer
 		Network.DestroyPlayerObjects(player);
 
 		Players.Remove(player.guid);
+	}
+
+	public bool GetSpawnInfo(NetworkPeer peer)
+	{
+		peer.LastSpawn = new NetworkPeer.SpawnInfo();
+
+		peer.LastSpawn.SpawnLocation = UnityEngine.Random.onUnitSphere * (UnityEngine.Random.value * 500);
+
+		return true;
 	}
 
 }
