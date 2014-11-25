@@ -9,6 +9,8 @@ public class MainMenu : MonoBehaviour
     public string ServerLevel = string.Empty;
 	public string ClientLevel = string.Empty;
 
+    public Button ClientStartButton = null;
+
 	public ListBox ServerList = null;
 
 	void Start ()
@@ -16,8 +18,22 @@ public class MainMenu : MonoBehaviour
         if (SystemInfo.graphicsDeviceID == 0)
             StartServer();
 
+        if (ClientStartButton != null)
+            ClientStartButton.interactable = false;
+       
 		MasterServer.RequestHostList(NetworkHost.GlobalHostID);
+
+        if (ServerList != null)
+            ServerList.SelectionChanged += ServerList_SelectionChanged;
 	}
+
+    void ServerList_SelectionChanged(object sender, EventArgs e)
+    {
+        if (ClientStartButton != null)
+            ClientStartButton.interactable = ServerList.GetSelectedItem() != null;
+
+        NetworkPeer.TargetServer = ServerList.GetSelectedItemTag() as HostData;
+    }
 
 	void OnMasterServerEvent(MasterServerEvent msEvent)
 	{

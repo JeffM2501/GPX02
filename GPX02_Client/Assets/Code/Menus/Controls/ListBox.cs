@@ -9,7 +9,7 @@ public class ListBox : MonoBehaviour
     public Toggle ItemPrefab = null;
     public ScrollRect ScrollArea = null;
 
-    protected class ListItem
+    public class ListItem
     {
         public GameObject RawObject = null;
         public Toggle Item = null;
@@ -18,6 +18,20 @@ public class ListBox : MonoBehaviour
 
     protected List<ListItem> Items = new List<ListItem>();
     protected ToggleGroup ItemGroup = null;
+
+    protected ListItem SelectedItem = null;
+    
+    public ListItem GetSelectedItem()
+    {
+        return SelectedItem;
+    }
+
+    public object GetSelectedItemTag()
+    {
+        return SelectedItem == null ? null : SelectedItem.Tag;
+    }
+
+    public event EventHandler SelectionChanged = null;
 
 	void Start ()
     {
@@ -54,12 +68,26 @@ public class ListBox : MonoBehaviour
             Text t = item.Item.GetComponentInChildren<Text>();
             if (t != null)
                 t.text = labelName;
+
+            ToggleEventHandler evt = item.RawObject.GetComponent<ToggleEventHandler>();
+            if (evt != null)
+                evt.Toggled += evt_Toggled;
         }
         item.Tag = tag;
 
         Items.Add(item);
 
         ScrollArea.verticalNormalizedPosition = 0;
+    }
+
+    void evt_Toggled(object sender, EventArgs e)
+    {
+        ToggleEventHandler handler = sender as ToggleEventHandler;
+        if (handler != null)
+            SelectedItem = Items.Find(delegate(ListItem i) { return i.RawObject == handler.gameObject; });
+
+        if (SelectionChanged != null)
+            SelectionChanged(this,EventArgs.Empty);
     }
 
     public void ClearItems()
