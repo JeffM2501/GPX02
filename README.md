@@ -19,3 +19,43 @@ If you want to develop on Linux you will need to use Wine, that's all there is t
 Coding
 =====
 The code for the system is done in C# and uses ether the .net or mono runtimes on end user systems. The Unity IDE packages up the run-times that are needed on each platform so there are no end user dependencies.
+
+
+TODO
+====
+* Chat System
+* Spawns
+  1. Client Sends request
+  2. Server sends response with location
+  3. Client spawns network object at location
+  4. Server links object to player and verifies location
+* Movement
+  * Should be automatic
+  * Mouse
+  * Keyboard
+  * Touch?
+  * Sticks?
+* Shots
+  1. Client Fires local shot and sends fire message with local ID
+  2. Server creates network shot and sends back local ID to global ID mapping
+  3. Client removes local shot and lets global shot do it's thing
+* Deaths
+  * Server side detection
+  * Death message kills a players local shots because the real ones are still live on the server
+* Powerups
+  * Entirely server side
+  * Synced Object Flags or just messages
+* Authentication
+  * Use BZID or Google?
+    * BZID
+      * Known
+      * Simple
+      * Lame
+    * Google
+      * Unknown
+      * Probably complicated
+      * Samples exist
+      * No forum based registration
+* Maps
+  * Object Placement Format
+  * Unity Level Loads
