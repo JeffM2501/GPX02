@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿//GPX02
+// Copyright 2014 Jeffery Myers
+
+using UnityEngine;
 using UnityEngine.UI;
 using System;
 using System.Collections;
