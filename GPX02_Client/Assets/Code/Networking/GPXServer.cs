@@ -39,7 +39,7 @@ public class GPXServer
 		Players.Add(peer.OwningPlayer.guid, new Player(peer));
 	}
 
-	public void PeerrDisconnected(NetworkPlayer player)
+	public void PeerDisconnected(NetworkPlayer player)
 	{
 		Debug.Log("Player Disconnected " + player.guid);
 		if (!Players.ContainsKey(player.guid))

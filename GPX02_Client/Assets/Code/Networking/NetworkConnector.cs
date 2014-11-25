@@ -94,13 +94,6 @@ public class NetworkConnector : MonoBehaviour
 	void OnConnectedToServer()
 	{
 		Debug.Log("Host connection established ");
-		networkView.RPC("ClientHail", RPCMode.Server, ConnectionMagic);
-	}
-
-	// Server RPCs
-	[RPC]
-	public void ClientAccept(string name, NetworkMessageInfo info)
-	{
 		if (PeerPrefab == null)
 		{
 			Debug.Log("No Peer Prefab");
@@ -124,6 +117,13 @@ public class NetworkConnector : MonoBehaviour
 		peer.SetLocalPeer();
 	}
 
+	void OnDisconnectedFromServer(NetworkDisconnection info)
+	{
+		Debug.Log("Client Disconnected " + info.ToString());
+
+		Application.Quit();
+	}
+
 	// serer messages
     void OnServerInitialized()
     {
@@ -138,14 +138,6 @@ public class NetworkConnector : MonoBehaviour
     void OnPlayerDisconnected(NetworkPlayer player)
     {
 		Debug.Log("Player Connected " + player.guid);
-		Server.PeerrDisconnected(player);
+		Server.PeerDisconnected(player);
     }
-
-	// Server RPCs
-	[RPC]
-	public void ClientHail (string magic, NetworkMessageInfo info)
-	{
-		Debug.Log(info.sender.guid + " sent hail: " + magic);
-		networkView.RPC("ClientAccept", info.sender, "Player");
-	}
 }
