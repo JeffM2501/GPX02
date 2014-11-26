@@ -20,7 +20,11 @@ public class NetworkConnector : MonoBehaviour
 
 	public NetworkPeer PeerPrefab = null;
 
-	public GPXServer Server = null;
+    public NetworkPeer LocalPeer = null;    // the local player so that GUI and input can access it
+	public GPXServer Server = null;         // the server so the GUI can access it
+
+    public event EventHandler LocalClientConnected; // we are a client and we connected, sender will be local client NetworkPeer
+    public event EventHandler ServerStarted;        // we are a server and we are listening, sender will be GPXServer class
 
     // singletons
 	public static NetworkConnector Connector = null;
@@ -83,6 +87,9 @@ public class NetworkConnector : MonoBehaviour
 
 			if (validNetwork)
 				MasterServer.RegisterHost(GlobalHostID, Options.ServerName, string.Empty);
+
+            if (ServerStarted != null)
+                ServerStarted(Server, EventArgs.Empty);
 		}
 		else
 		{
@@ -107,14 +114,17 @@ public class NetworkConnector : MonoBehaviour
 			Application.Quit();
 		}
 
-		NetworkPeer peer = obj.GetComponent<NetworkPeer>();
-		if (peer == null)
+        LocalPeer = obj.GetComponent<NetworkPeer>();
+        if (LocalPeer == null)
 		{
 			Debug.Log("Peer Prefab component failure");
 			Application.Quit();
 		}
 
-		peer.SetLocalPeer("PlayerName");
+        LocalPeer.SetLocalPeer("PlayerName");
+
+        if (LocalClientConnected != null)
+            LocalClientConnected(LocalPeer, EventArgs.Empty);
 	}
 
 	void OnDisconnectedFromServer(NetworkDisconnection info)
