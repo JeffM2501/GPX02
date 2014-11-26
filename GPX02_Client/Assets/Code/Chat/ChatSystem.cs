@@ -13,6 +13,7 @@ public class ChatMessage
     public string MessageText = string.Empty;
 
     public ChatRecipient From = null;
+	public object Tag = null;
 
     public enum Types
     {
