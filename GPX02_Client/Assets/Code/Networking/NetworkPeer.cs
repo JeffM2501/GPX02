@@ -14,6 +14,9 @@ public class NetworkPeer : MonoBehaviour
 	public string PlayerName = string.Empty;
 	public NetworkPlayer OwningPlayer;
 
+    public int RedCards = 0;
+    public static int MaxRedCards = 3;
+
 	public class SpawnInfo
 	{
 		public Vector3 SpawnLocation = Vector3.zero;
@@ -54,6 +57,17 @@ public class NetworkPeer : MonoBehaviour
     {
 		
 	}
+
+    // security API
+    protected void AddRedCard()
+    {
+        RedCards++;
+        if (RedCards >= MaxRedCards)
+        {
+            Debug.Log("Max red cards hit for " + PlayerName + " : " + OwningPlayer.guid);
+            Network.CloseConnection(OwningPlayer, true);
+        }   
+    }
 
 	// client API
 
@@ -112,6 +126,12 @@ public class NetworkPeer : MonoBehaviour
 	[RPC]
 	void ServerHail(string magic, string name, NetworkMessageInfo info)
 	{
+        if (Status != Statuses.Raw)
+        {
+            AddRedCard();
+            return;
+        }
+
 		Debug.Log(info.sender.guid + " sent hail: " + magic);
 		if (NetworkConnector.Connector.Server.PeerConnect(this))
 		{
@@ -125,6 +145,12 @@ public class NetworkPeer : MonoBehaviour
 	[RPC]
 	void ServerRequestSpawn (NetworkMessageInfo info)
 	{
+        if (Status != Statuses.Accepted && Status != Statuses.Dead)
+        {
+            AddRedCard();
+            return;
+        }
+
 		NetworkConnector.Connector.Server.GetSpawnInfo(this);
 		networkView.RPC("ClientSpawn", info.sender, this.LastSpawn.SpawnLocation);
 	}
@@ -132,6 +158,40 @@ public class NetworkPeer : MonoBehaviour
     [RPC]
     void ServerReceiveChatMessage(int recipient, string message, NetworkMessageInfo info)
     {
+        if (Status == Statuses.Raw)
+        {
+            AddRedCard();
+            return;
+        }
+
         NetworkConnector.Connector.Server.PeerSentChat(this, recipient, message);
+    }
+}
+
+public class TestBehavor : MonoBehaviour
+{
+    public Transform playerPrefab;
+    public ArrayList playerScripts = new ArrayList();
+    
+    void OnServerInitialized()
+    {
+        SpawnPlayer(Network.player);
+    }
+
+    void OnPlayerConnected(NetworkPlayer player)
+    {
+        SpawnPlayer(player);
+    }
+
+    void SpawnPlayer(NetworkPlayer player)
+    {
+        string tempPlayerString = player.ToString();
+        int playerNumber = Convert.ToInt32(tempPlayerString);
+
+        Transform newPlayerTransform = (Transform)Network.Instantiate(playerPrefab, transform.position, transform.rotation, playerNumber);
+        playerScripts.Add(newPlayerTransform.GetComponent("cubeMoveAuthoritative"));
+
+        NetworkView theNetworkView = newPlayerTransform.networkView;
+        theNetworkView.RPC("SetPlayer", RPCMode.AllBuffered, player);
     }
 }
