@@ -16,7 +16,7 @@ public class NetworkConnector : MonoBehaviour
 
 	public static HostData TargetServer = null;
 
-	public bool StartAsServer = false;
+	public static bool StartAsServer = false;
 
 	public NetworkPeer PeerPrefab = null;
 

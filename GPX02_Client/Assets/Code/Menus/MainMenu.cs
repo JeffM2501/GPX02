@@ -53,7 +53,7 @@ public class MainMenu : MonoBehaviour
 
     public void StartServer()
     {
-		NetworkConnector.Connector.StartAsServer = true;
+		NetworkConnector.StartAsServer = true;
 
         if (ServerLevel == string.Empty)
             Application.Quit();
@@ -63,7 +63,7 @@ public class MainMenu : MonoBehaviour
 
     public void StartClient()
     {
-		NetworkConnector.Connector.StartAsServer = false;
+		NetworkConnector.StartAsServer = false;
 		Application.LoadLevel(ClientLevel);
     }
 
