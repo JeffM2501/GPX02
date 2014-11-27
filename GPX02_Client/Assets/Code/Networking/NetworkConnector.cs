@@ -147,7 +147,7 @@ public class NetworkConnector : MonoBehaviour
 
     void OnPlayerDisconnected(NetworkPlayer player)
     {
-		Debug.Log("Player Connected " + player.guid);
+		Debug.Log("Player Disconnected " + player.guid);
 		Server.PeerDisconnected(player);
     }
 }

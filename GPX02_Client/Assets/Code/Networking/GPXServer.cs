@@ -17,7 +17,7 @@ public class GPXServer
 
 	public bool PeerConnect(NetworkPeer peer)
 	{
-		Debug.Log("Player Connected " + peer.OwningPlayer.guid);
+		Debug.Log("PeerConnect Player Connected " + peer.OwningPlayer.guid);
 		if (Players.ContainsKey(peer.OwningPlayer.guid))
 		{
 			Debug.Log("Duplicate player added:" + peer.OwningPlayer.guid);
@@ -35,6 +35,12 @@ public class GPXServer
         // tell just the client about the other players
         SendNewPlayerRecipients(peer);
 
+		return true;
+	}
+
+	public bool PeerHail(string name, NetworkPeer peer)
+	{
+		peer.PlayerName = name;
 		return true;
 	}
 

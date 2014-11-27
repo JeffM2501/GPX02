@@ -61,6 +61,7 @@ public class NetworkPeer : MonoBehaviour
     // security API
     protected void AddRedCard()
     {
+		Debug.Log("Red cards added for " + PlayerName + " : " + OwningPlayer.guid);
         RedCards++;
         if (RedCards >= MaxRedCards)
         {
@@ -126,15 +127,16 @@ public class NetworkPeer : MonoBehaviour
 	[RPC]
 	void ServerHail(string magic, string name, NetworkMessageInfo info)
 	{
-        if (Status != Statuses.Raw)
+        if (info.sender != OwningPlayer || Status != Statuses.Raw || !Network.isServer)
         {
             AddRedCard();
             return;
         }
 
 		Debug.Log(info.sender.guid + " sent hail: " + magic);
-		if (NetworkConnector.Connector.Server.PeerConnect(this))
+		if(magic == NetworkConnector.ConnectionMagic && NetworkConnector.Connector.Server.PeerHail(name, this))
 		{
+			Debug.Log("Accepted");
 			Status = Statuses.Accepted;
 			networkView.RPC("ClientAccept", info.sender, new object[]{this.PlayerName,this.Chat.MyChatID});
 		}
@@ -165,33 +167,5 @@ public class NetworkPeer : MonoBehaviour
         }
 
         NetworkConnector.Connector.Server.PeerSentChat(this, recipient, message);
-    }
-}
-
-public class TestBehavor : MonoBehaviour
-{
-    public Transform playerPrefab;
-    public ArrayList playerScripts = new ArrayList();
-    
-    void OnServerInitialized()
-    {
-        SpawnPlayer(Network.player);
-    }
-
-    void OnPlayerConnected(NetworkPlayer player)
-    {
-        SpawnPlayer(player);
-    }
-
-    void SpawnPlayer(NetworkPlayer player)
-    {
-        string tempPlayerString = player.ToString();
-        int playerNumber = Convert.ToInt32(tempPlayerString);
-
-        Transform newPlayerTransform = (Transform)Network.Instantiate(playerPrefab, transform.position, transform.rotation, playerNumber);
-        playerScripts.Add(newPlayerTransform.GetComponent("cubeMoveAuthoritative"));
-
-        NetworkView theNetworkView = newPlayerTransform.networkView;
-        theNetworkView.RPC("SetPlayer", RPCMode.AllBuffered, player);
     }
 }
