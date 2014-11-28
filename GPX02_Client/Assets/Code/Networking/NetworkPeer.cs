@@ -94,8 +94,8 @@ public class NetworkPeer : MonoBehaviour
         PlayerName = name;
 
         // so we know who we are
-        Chat.SetMyChatID(chatID);
-        Chat.KnownRecipients.Add(chatID, new ChatRecipient(chatID, name));
+		Chat.SetMyChatID(chatID);
+        Chat.AddRecipient(chatID, name);
 
 		Status = Statuses.Accepted;
 		if (ServerAcceptance != null)
