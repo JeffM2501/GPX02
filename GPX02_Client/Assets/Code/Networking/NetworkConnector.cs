@@ -97,6 +97,14 @@ public class NetworkConnector : MonoBehaviour
 		}
     }
 
+	public void Shutdown()
+	{
+		if(Network.isServer && Server != null)
+			Server.Shutdown();
+
+		Network.Disconnect();
+	}
+
 	// client messages
 	void OnConnectedToServer()
 	{

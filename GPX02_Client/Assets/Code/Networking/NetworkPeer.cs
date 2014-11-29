@@ -11,8 +11,11 @@ public class NetworkPeer : MonoBehaviour
 {
 	protected bool IsLocalPeer = false;
 
+	public PlayerAvatar AvatarPrefab = null;
+
 	public string PlayerName = string.Empty;
 	public NetworkPlayer OwningPlayer;
+	public PlayerAvatar Avatar = null;
 
     public int RedCards = 0;
     public static int MaxRedCards = 3;
@@ -34,6 +37,7 @@ public class NetworkPeer : MonoBehaviour
 	public Statuses Status = Statuses.Raw;
 
 	public event EventHandler ServerAcceptance;
+	public event EventHandler PlayerSpawn;
 
     public ChatSystem Chat = new ChatSystem();
 
@@ -90,7 +94,7 @@ public class NetworkPeer : MonoBehaviour
 	[RPC]
 	void ClientAccept(string name, int chatID, NetworkMessageInfo info)
 	{
-		Debug.Log("Client has accepted me");
+		Debug.Log("Server has accepted me");
         PlayerName = name;
 
         // so we know who we are
@@ -107,8 +111,14 @@ public class NetworkPeer : MonoBehaviour
 	{
 		Debug.Log("Client has sent me a spawn " + location.ToString());
 		Status = Statuses.Playing;
-		
+		LastSpawn.SpawnLocation = location;
+
+		Avatar = (Network.Instantiate(AvatarPrefab, location, Quaternion.identity, 3) as GameObject).GetComponent<PlayerAvatar>();
+		Avatar.gameObject.AddComponent<PlayerMover>();
+
 		// spawn a player object
+		if(PlayerSpawn != null)
+			PlayerSpawn(this, EventArgs.Empty);
 	}
 
     [RPC]
@@ -152,7 +162,7 @@ public class NetworkPeer : MonoBehaviour
             AddRedCard();
             return;
         }
-
+		Status = Statuses.Playing;
 		NetworkConnector.Connector.Server.GetSpawnInfo(this);
 		networkView.RPC("ClientSpawn", info.sender, this.LastSpawn.SpawnLocation);
 	}

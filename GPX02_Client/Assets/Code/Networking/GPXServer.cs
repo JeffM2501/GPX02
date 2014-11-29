@@ -15,6 +15,10 @@ public class GPXServer
 
     public ChatSystem Chat = new ChatSystem();
 
+	public void Shutdown()
+	{
+
+	}
 	public bool PeerConnect(NetworkPeer peer)
 	{
 		Debug.Log("PeerConnect Player Connected " + peer.OwningPlayer.guid);
@@ -77,6 +81,20 @@ public class GPXServer
 
 		peer.LastSpawn.SpawnLocation = UnityEngine.Random.onUnitSphere * (UnityEngine.Random.value * 500);
 
+		return true;
+	}
+
+	public bool NewAvatar(PlayerAvatar avatar, NetworkPlayer player)
+	{
+		if(!Players.ContainsKey(player.guid))
+			return false;
+
+		NetworkPeer peer = Players[player.guid];
+		if(peer.Status != NetworkPeer.Statuses.Playing || peer.Avatar != null || peer.LastSpawn.SpawnLocation == avatar.transform.position)
+			return false;
+
+		peer.Avatar = avatar;
+		avatar.Owner = peer;
 		return true;
 	}
 
