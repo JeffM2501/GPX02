@@ -159,6 +159,7 @@ public class NetworkPeer : MonoBehaviour
 	{
         if (Status != Statuses.Accepted && Status != Statuses.Dead)
         {
+			Debug.Log("Invalid state for spawn request: " + Status.ToString());
             AddRedCard();
             return;
         }

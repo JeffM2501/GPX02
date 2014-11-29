@@ -11,12 +11,19 @@ public class PlayerAvatar : MonoBehaviour
 {
 	public NetworkPeer Owner = null;
 
+	public AudioClip SpawnSound = null;
+
 	void OnNetworkInstantiate(NetworkMessageInfo info)
 	{
 		if(Network.isServer)	// verify that this avatar was made by the right person
 		{
 			if(NetworkConnector.Connector == null || NetworkConnector.Connector.Server == null || !NetworkConnector.Connector.Server.NewAvatar(this, info.sender))
 				Network.CloseConnection(info.sender,true);
+		}
+
+		if(SpawnSound != null)
+		{
+			this.audio.PlayOneShot(SpawnSound);
 		}
 	}
 
