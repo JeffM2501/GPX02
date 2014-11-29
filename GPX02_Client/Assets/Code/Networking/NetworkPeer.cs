@@ -149,6 +149,8 @@ public class NetworkPeer : MonoBehaviour
 			Debug.Log("Accepted");
 			Status = Statuses.Accepted;
 			networkView.RPC("ClientAccept", info.sender, new object[]{this.PlayerName,this.Chat.MyChatID});
+
+			Debug.Log("Hail status " + Status.ToString());
 		}
 		else
 			Network.CloseConnection(info.sender,true);
@@ -157,15 +159,20 @@ public class NetworkPeer : MonoBehaviour
 	[RPC]
 	void ServerRequestSpawn (NetworkMessageInfo info)
 	{
-        if (Status != Statuses.Accepted && Status != Statuses.Dead)
+        if (Status == Statuses.Accepted || Status == Statuses.Dead)
         {
-			Debug.Log("Invalid state for spawn request: " + Status.ToString());
-            AddRedCard();
-            return;
+			Status = Statuses.Playing;
+			NetworkConnector.Connector.Server.GetSpawnInfo(this);
+			networkView.RPC("ClientSpawn", info.sender, this.LastSpawn.SpawnLocation);
+
+			Debug.Log("Spawn status " + Status.ToString());
         }
-		Status = Statuses.Playing;
-		NetworkConnector.Connector.Server.GetSpawnInfo(this);
-		networkView.RPC("ClientSpawn", info.sender, this.LastSpawn.SpawnLocation);
+		else
+		{
+			Debug.Log("Invalid state for spawn request: " + Status.ToString());
+			AddRedCard();
+			return;
+		}
 	}
 
     [RPC]
