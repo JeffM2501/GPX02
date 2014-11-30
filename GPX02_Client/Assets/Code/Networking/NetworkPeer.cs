@@ -25,6 +25,7 @@ public class NetworkPeer : MonoBehaviour
 		public Vector3 SpawnLocation = Vector3.zero;
 	}
 	public SpawnInfo LastSpawn = null;
+	protected bool SpawnOutstanding = false;
 
 	public enum Statuses
 	{
@@ -78,8 +79,13 @@ public class NetworkPeer : MonoBehaviour
 
     public void RequestSpawn()
     {
+		if(SpawnOutstanding)
+			return;
+
         Debug.Log("Sending spawn request");
         networkView.RPC("ServerRequestSpawn", RPCMode.Server, null);
+
+		SpawnOutstanding = true;
     }
 
     public void SendChatMessage(int recipient, string chat)
@@ -109,7 +115,9 @@ public class NetworkPeer : MonoBehaviour
 	[RPC]
 	void ClientSpawn(Vector3 location, NetworkMessageInfo info)
 	{
-		Debug.Log("Client has sent me a spawn " + location.ToString());
+		SpawnOutstanding = false;
+
+		Debug.Log("Server has sent me a spawn " + location.ToString());
 		Status = Statuses.Playing;
 		LastSpawn.SpawnLocation = location;
 

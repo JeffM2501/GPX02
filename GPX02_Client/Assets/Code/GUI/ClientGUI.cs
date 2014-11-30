@@ -59,6 +59,7 @@ public class ClientGUI : MonoBehaviour
 
 		// do spawn
 		NetworkConnector.Connector.LocalPeer.RequestSpawn();
+
 	}
 
 	void Connector_LocalClientConnected(object sender, System.EventArgs e)

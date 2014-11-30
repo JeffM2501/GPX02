@@ -49,6 +49,9 @@ public class NetworkConnector : MonoBehaviour
     {
 		Connector = this;
 
+		if(GameObject.FindGameObjectWithTag("Server") != null)
+			StartAsServer = true;
+
 		if (StartAsServer)
 		{
 			Server = new GPXServer();
